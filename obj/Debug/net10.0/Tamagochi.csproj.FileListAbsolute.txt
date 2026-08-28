@@ -31,3 +31,4 @@
 /home/mocha/Tamagochi/obj/Debug/net10.0/Tamagochi.pdb
 /home/mocha/Tamagochi/obj/Debug/net10.0/Tamagochi.genruntimeconfig.cache
 /home/mocha/Tamagochi/obj/Debug/net10.0/ref/Tamagochi.dll
+/home/mocha/Tamagochi/obj/Debug/net10.0/Tamagochi.sourcelink.json
