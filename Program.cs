@@ -30,13 +30,14 @@ while (true)
     if (pokemon != null)
     {
         Console.WriteLine($"\nCongratulations! {pokemon.Nome.ToUpper()} is now yours! ");
-        Console.WriteLine();
-        Console.WriteLine("Which name do you want to give to your new Pokémon?");
+
+
+        Console.WriteLine("\nWhich name do you want to give to your new Pokémon?");
         mechanics.name = Console.ReadLine() ?? "";
         mechanics.specie = pokemon.Nome;
         mechanics.type = string.Join(", ", pokemon.Tipos.Select(t => t.Type.Name));
 
-        Console.WriteLine("Ok, your Pokémon is ready to start the adventure! Here are its initial stats:");
+        Console.WriteLine("\nOk, your Pokémon is ready to start the adventure! Here are its initial stats:");
         Console.WriteLine();
         mechanics.ShowStatus();
 
