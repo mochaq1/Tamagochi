@@ -7,11 +7,13 @@ public class Mechanics
     private int _energy = 100;
     private int _sleepness = 0;
     private int _vitality = 100;
+    private int _level = 0;
 
     public string name { get; set; } = "";
     public string specie { get; set; } = "";
     public string type { get; set; } = "";
     public string comand { get; set; } = "";
+    public int xp { get; set; } = 0;
     public DateTime lastUpdate = DateTime.Now;
     public bool tuberculosis = false;
 
@@ -21,6 +23,12 @@ public class Mechanics
     {
         get => _hungry;
         set => _hungry = Math.Clamp(value, 0, 100);
+    }
+
+    public int level
+    {
+        get => _level;
+        set => _level = Math.Clamp(value, 1, 100);
     }
 
     public int happiness
@@ -61,16 +69,61 @@ public class Mechanics
         {
             int completeCycles = (int)Math.Floor(cycle);
 
+
+
+            if (tuberculosis)
+            {
+                Console.WriteLine("Warning: Your Pokémon has tuberculosis! Its vitality is decreasing faster than normal.");
+            }
+
+            if (vitality < 25)
+            {
+                Console.WriteLine("Warning: Your Pokémon's vitality is low! Take care of it to prevent it from dying.");
+            }
+
+            if (hungry >= 80)
+            {
+                Console.WriteLine("Warning: Your Pokémon is very hungry! Feed it to prevent its vitality from decreasing.");
+            }
+
+            if (sleepness >= 80)
+            {
+                Console.WriteLine("Warning: Your Pokémon is very tired! Let it rest to prevent its vitality from decreasing.");
+            }
+
+            if (energy <= 10)
+            {
+                Console.WriteLine("Warning: Your Pokémon is very low on energy! Let it rest to prevent its vitality from decreasing.");
+            }
+
+            if (happiness <= 10)
+            {
+                Console.WriteLine("Warning: Your Pokémon is very unhappy! Play with it to prevent its vitality from decreasing.");
+            }
+
+            if (xp > level * 20)
+            {
+
+                levelUp();
+
+
+            }
+
+
+
+
+
+
             if (!tuberculosis && random.Next(1, 101) <= 5)
             {
                 tuberculosis = true;
                 Console.WriteLine($"\n{name} has contracted tuberculosis! You need to take care of it!");
             }
 
-            hungry += completeCycles * 2;
-            sleepness += completeCycles * 2;
-            energy -= completeCycles * 2;
-            happiness -= completeCycles * 1;
+            hungry += completeCycles * 2 - xp / 20;
+            sleepness += completeCycles * 2 - xp / 20;
+            energy -= completeCycles * 2 + xp / 20;
+            happiness -= completeCycles * 1 + xp / 20;
 
             if (hungry >= 80)
             {
@@ -128,7 +181,10 @@ public class Mechanics
 
         Console.WriteLine($"Vitality: {vitality}\n");
 
+        Console.WriteLine($"Level: {level}\n");
+
         Console.WriteLine($"Tuberculosis: {(tuberculosis ? "Yes" : "No")}\n");
+
         Console.WriteLine("___________________________________________________________________________");
     }
 
@@ -139,6 +195,7 @@ public class Mechanics
         happiness += 10;
         energy += 20;
         sleepness -= 10;
+        xp += 5;
 
         Console.WriteLine($"\n{name} has been fed!");
         comand = "";
@@ -151,6 +208,7 @@ public class Mechanics
         happiness += 20;
         energy -= 20;
         sleepness += 10;
+        xp += 10;
 
         Console.WriteLine($"\n{name} has played!");
         comand = "";
@@ -163,6 +221,7 @@ public class Mechanics
         happiness -= 10;
         energy += 30;
         sleepness -= 20;
+        xp += 2;
 
         Console.WriteLine($"\n{name} has slept!");
         comand = "";
@@ -190,6 +249,21 @@ public class Mechanics
 
     public void kill()
     {
+
+        Console.WriteLine($"\nAre you stupid? You just killed your Pokémon! You're a monster! Poor {name}");
         vitality = 0;
+    }
+
+    public void levelUp()
+    {
+        level++;
+        xp = 0;
+        vitality = 100;
+        hungry = 0;
+        happiness = 100;
+        energy = 100;
+        sleepness = 0;
+
+        Console.WriteLine($"\nCongratulations! {name} has leveled up to level {level}!");
     }
 }
