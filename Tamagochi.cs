@@ -2,36 +2,194 @@ namespace Tamagotchi;
 
 public class Mechanics
 {
-    public string name { get;  set; } = "";
-    public string specie { get;  set; } = "";
-    public string type { get;set; } = "";
-    public int hungry { get;  set; } = 0;
-    public int happiness { get;  set; } = 100;
-    public int energy { get; set; } = 100;
+    private int _hungry = 0;
+    private int _happiness = 100;
+    private int _energy = 100;
+    private int _sleepness = 0;
+    private int _vitality = 100;
+
+    public string name { get; set; } = "";
+    public string specie { get; set; } = "";
+    public string type { get; set; } = "";
+    public string comand { get; set; } = "";
+    public DateTime lastUpdate = DateTime.Now;
+    public bool tuberculosis = false;
+
+    private Random random = new Random();
+
+    public int hungry
+    {
+        get => _hungry;
+        set => _hungry = Math.Clamp(value, 0, 100);
+    }
+
+    public int happiness
+    {
+        get => _happiness;
+        set => _happiness = Math.Clamp(value, 0, 100);
+    }
+
+    public int energy
+    {
+        get => _energy;
+        set => _energy = Math.Clamp(value, 0, 100);
+    }
+
+    public int sleepness
+    {
+        get => _sleepness;
+        set => _sleepness = Math.Clamp(value, 0, 100);
+    }
+
+    public int vitality
+    {
+        get => _vitality;
+        set => _vitality = Math.Clamp(value, 0, 100);
+    }
 
     public Mechanics()
     {
     }
 
+    public void TimeUpdate()
+    {
+        DateTime now = DateTime.Now;
+        double timeSinceLastUpdate = (now - lastUpdate).TotalSeconds;
+        double cycle = timeSinceLastUpdate / 5.0;
+
+        if (cycle >= 1.0)
+        {
+            int completeCycles = (int)Math.Floor(cycle);
+
+            if (!tuberculosis && random.Next(1, 101) <= 5)
+            {
+                tuberculosis = true;
+                Console.WriteLine($"\n{name} has contracted tuberculosis! You need to take care of it!");
+            }
+
+            hungry += completeCycles * 2;
+            sleepness += completeCycles * 2;
+            energy -= completeCycles * 2;
+            happiness -= completeCycles * 1;
+
+            if (hungry >= 80)
+            {
+                vitality -= completeCycles * 3;
+                energy -= completeCycles * 2;
+            }
+
+            if (sleepness >= 80)
+            {
+                vitality -= completeCycles * 3;
+                happiness -= completeCycles * 2;
+            }
+
+            if (energy <= 10)
+            {
+                vitality -= completeCycles * 4;
+                happiness -= completeCycles * 3;
+            }
+
+            if (happiness <= 10)
+            {
+                vitality -= completeCycles * 2;
+                energy -= completeCycles * 1;
+            }
+
+            if (tuberculosis)
+            {
+                vitality -= completeCycles * 5;
+                energy -= completeCycles * 3;
+            }
+
+            lastUpdate = lastUpdate.AddSeconds(completeCycles * 5);
+        }
+    }
+
     public void ShowStatus()
     {
+        TimeUpdate();
 
         Console.WriteLine("___________________________________________________________________________");
-        Console.WriteLine("                            POKÉMON STATUS                                   ");
-        Console.WriteLine();
-        Console.WriteLine($"Name: {name}");
-        Console.WriteLine();
-        Console.WriteLine($"Specie: {specie}");
-        Console.WriteLine();
-        Console.WriteLine($"Type: {type}");
-        Console.WriteLine();
-        Console.WriteLine($"Hungry: {hungry}");
-        Console.WriteLine();
-        Console.WriteLine($"Happiness: {happiness}");
-        Console.WriteLine();
-        Console.WriteLine($"Energy: {energy}");
+        Console.WriteLine("                            POKÉMON STATUS                                   \n");
+
+        Console.WriteLine($"Name: {name}\n");
+
+        Console.WriteLine($"Specie: {specie}\n");
+
+        Console.WriteLine($"Type: {type}\n");
+
+        Console.WriteLine($"Hungry: {hungry}\n");
+        Console.WriteLine($"Happiness: {happiness}\n");
+
+        Console.WriteLine($"Energy: {energy}\n");
+
+        Console.WriteLine($"Sleepness: {sleepness}\n");
+
+        Console.WriteLine($"Vitality: {vitality}\n");
+
+        Console.WriteLine($"Tuberculosis: {(tuberculosis ? "Yes" : "No")}\n");
         Console.WriteLine("___________________________________________________________________________");
     }
 
+    public void Feed()
+    {
+        TimeUpdate();
+        hungry -= 10;
+        happiness += 10;
+        energy += 20;
+        sleepness -= 10;
 
+        Console.WriteLine($"\n{name} has been fed!");
+        comand = "";
+    }
+
+    public void Play()
+    {
+        TimeUpdate();
+        hungry += 10;
+        happiness += 20;
+        energy -= 20;
+        sleepness += 10;
+
+        Console.WriteLine($"\n{name} has played!");
+        comand = "";
+    }
+
+    public void Sleep()
+    {
+        TimeUpdate();
+        hungry += 20;
+        happiness -= 10;
+        energy += 30;
+        sleepness -= 20;
+
+        Console.WriteLine($"\n{name} has slept!");
+        comand = "";
+    }
+
+    public void Cure()
+    {
+        TimeUpdate();
+        if (tuberculosis)
+        {
+            tuberculosis = false;
+            Console.WriteLine($"\n{name} has been cured of tuberculosis!");
+        }
+        else
+        {
+            Console.WriteLine($"\n{name} does not have tuberculosis.");
+        }
+        comand = "";
+    }
+
+    public void exit()
+    {
+        Console.WriteLine($"\nGoodbye! {name} will miss you!");
+    }
+
+    public void kill()
+    {
+        vitality = 0;
+    }
 }
